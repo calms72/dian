@@ -163,8 +163,27 @@ void prework(){
     fclose(pfd);
 }
 
+void findseatboss(){
+    readseat();
+    for(int i=1;i<=7;i++){
+        for(int j=1;j<=5;j++){
+            for(int k=1;k<=4;k++){
+                for(int w=1;w<=4;w++){
+                    if(arr[i][j][k][w]!=0){
+                        cout<<day[i]<<" ";
+                        printf("Floor %d Seat %d %d User %c\n",j,k,w,arr[i][j][k][w]+'A'-1);
+                    }
+                }
+            }
+        }
+    }
+}
+
 void findseat(){   
     readseat();
+    if(user==100){
+        findseatboss();
+    }
     for(int i=1;i<=7;i++){
         for(int j=1;j<=5;j++){
             for(int k=1;k<=4;k++){
@@ -191,8 +210,34 @@ void reserveboss(){
     writeseat();
 }
 
+void eraseday(){//Erase Monday 
+    readseat();
+    cin>>c;
+    if(c=="All"){
+        for(int j=1;j<=5;j++){
+            for(int k=1;k<=4;k++){
+                for(int w=1;w<=4;w++){
+                    arr[cd][j][k][w]=0;
+                }
+            }
+        }
+    }
+    if(c=="Floor"){
+        cin>>cf;
+        for(int k=1;k<=4;k++){
+            for(int w=1;w<=4;w++){
+                arr[cd][cf][k][w]=0;
+            }
+        }
+    }
+}
+
 void eraseboss(){
     cin>>c;
+    if(checkday()){
+        eraseday();
+        return;
+    }
     int now= c[0] - 'A' + 1;
     cin>>c;
     checkday();
