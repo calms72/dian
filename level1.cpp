@@ -80,6 +80,7 @@ void writeseat(){
 void readseat(){
     FILE *pfd=fopen("library.txt","r");
     if(!pfd){
+        fclose(pfd);
         memset(arr,0,sizeof(arr));
         return;
     }
@@ -202,6 +203,10 @@ int main(){
         }
 
         if(checkday()){
+            if(user==0){
+                cout<<"请先登录\n";
+                continue;
+            }
             cin>>c;
             cin>>cf;
             if(cf<1||cf>5){
@@ -212,10 +217,18 @@ int main(){
             printfnow();
         }
         if(c=="Reserve"){
+            if(user==0){
+                cout<<"请先登录\n";
+                continue;
+            }
             reserve();
             continue;
         }
         if(c=="Clear"){
+            if(user==0){
+                cout<<"请先登录\n";
+                continue;
+            }
             if(user!=100){
                 cout<<"权限不够";
             }else{   
@@ -225,6 +238,10 @@ int main(){
             continue;
         }
         if(c=="Reservation"){
+            if(user==0){
+                cout<<"请先登录\n";
+                continue;
+            }
             findseat();
             continue;
         }

@@ -4,7 +4,9 @@ using namespace std;
 
 string c;
 int user;
-int arr[8][6][5][5];//7天 5层 4*4
+int arr[8][6][100][100];//7天 5层 4*4
+int arrx[8][6];//记录每层的行数
+int arry[8][6][100];//记录每层每行的列数
 int cf;
 int cd;
 int x,y;
@@ -64,11 +66,13 @@ bool checkday(){
 }
 
 void writeseat(){
-    FILE *pfd=fopen("library.txt","w");
+    FILE *pfd=fopen("library2.txt","w");
     for(int i=1;i<=7;i++){
         for(int j=1;j<=5;j++){
-            for(int k=1;k<=4;k++){
-                for(int w=1;w<=4;w++){
+            fprintf(pfd,"%d ",arrx[i][j]);
+            for(int k=1;k<=arrx[i][j];k++){
+                fprintf(pfd,"%d ",arry[i][j][k]);
+                for(int w=1;w<=arry[i][j][k];w++){
                     fprintf(pfd,"%d ",arr[i][j][k][w]);
                 }
             }
@@ -78,15 +82,38 @@ void writeseat(){
 }
 
 void readseat(){
-    FILE *pfd=fopen("library.txt","r");
+    FILE *pfd=fopen("library2.txt","r");
     if(!pfd){
+        fclose(pfd);
         memset(arr,0,sizeof(arr));
+        memset(arrx,0,sizeof(arrx));
+        memset(arry,0,sizeof(arry));
+        for(int i=1;i<=7;i++){
+            for(int j=1;j<=5;j++){
+                arrx[i][j]=4;
+                for(int k=1;k<=4;k++){
+                    arry[i][j][k]=4;
+                }
+            }
+        }
+        for(int i=1;i<=7;i++){
+            for(int j=1;j<=5;j++){
+                for(int k=1;k<=arrx[i][j];k++){
+                    for(int w=1;w<=arry[i][j][k];w++){
+                        arr[i][j][k][w]=30;
+                    }
+                }
+            }
+        }
+        writeseat();
         return;
     }
     for(int i=1;i<=7;i++){
         for(int j=1;j<=5;j++){
-            for(int k=1;k<=4;k++){
-                for(int w=1;w<=4;w++){
+            fscanf(pfd,"%d",&arrx[i][j]);
+            for(int k=1;k<=arrx[i][j];k++){
+                fscanf(pfd,"%d",&arry[i][j][k]);
+                for(int w=1;w<=arry[i][j][k];w++){
                     fscanf(pfd,"%d",&arr[i][j][k][w]);
                 }
             }
@@ -108,7 +135,7 @@ void reserve(){
         cout<<"输入不合法\n";
         return;
     }
-    if(arr[cd][cf][x][y]!=0){
+    if(arr[cd][cf][x][y]!=30){
         cout<<"该位置已被预约，请求失败\n";
         return;
     }
@@ -118,10 +145,12 @@ void reserve(){
 }
 
 void printfboss(){
-    for(int i=1;i<=4;i++){
-        for(int j=1;j<=4;j++){
-            if(arr[cd][cf][i][j]==0){
+    for(int i=1;i<=arrx[cd][cf];i++){
+        for(int j=1;j<=arry[cd][cf][i];j++){
+            if(arr[cd][cf][i][j]==30){
                 cout<<0<<" ";
+            }else if(arr[cd][cf][i][j]==0){
+                cout<<-1<<" ";
             }else{
                 printf("%c ",arr[cd][cf][i][j]+'A'-1);
             }
@@ -135,12 +164,14 @@ void printfnow(){
         printfboss();
         return;
     }
-    for(int i=1;i<=4;i++){
-        for(int j=1;j<=4;j++){
-            if(arr[cd][cf][i][j]==0){
+    for(int i=1;i<=arrx[cd][cf];i++){
+        for(int j=1;j<=arry[cd][cf][j];j++){
+            if(arr[cd][cf][i][j]==30){
                 cout<<0<<" ";
             }else if(arr[cd][cf][i][j]==user){
                 cout<<2<<" ";
+            }else if(arr[cd][cf][i][j]==0){
+                cout<<-1<<" ";
             }else{
                 cout<<1<<" ";
             }
@@ -150,11 +181,18 @@ void printfnow(){
 }
 
 void prework(){
-    FILE *pfd=fopen("library.txt","w");
+    FILE *pfd=fopen("library2.txt","w");
+    memset(arr,0,sizeof(arr));
+    memset(arrx,0,sizeof(arrx));
+    memset(arry,0,sizeof(arry));
     for(int i=1;i<=7;i++){
         for(int j=1;j<=5;j++){
-            for(int k=1;k<=4;k++){
-                for(int w=1;w<=4;w++){
+            fprintf(pfd,"%d ",4);
+            arrx[i][j]=4;
+            for(int k=1;k<=arrx[i][j];k++){
+                fprintf(pfd,"%d ",4);
+                arry[i][j][k]=4;
+                for(int w=1;w<=arry[i][j][k];w++){
                     fprintf(pfd,"0 ");
                 }
             }
@@ -167,9 +205,9 @@ void findseatboss(){
     readseat();
     for(int i=1;i<=7;i++){
         for(int j=1;j<=5;j++){
-            for(int k=1;k<=4;k++){
-                for(int w=1;w<=4;w++){
-                    if(arr[i][j][k][w]!=0){
+            for(int k=1;k<=arrx[i][j];k++){
+                for(int w=1;w<=arry[i][j][k];w++){
+                    if(arr[i][j][k][w]!=30&&arr[i][j][k][w]!=0){
                         cout<<day[i]<<" ";
                         printf("Floor %d Seat %d %d User %c\n",j,k,w,arr[i][j][k][w]+'A'-1);
                     }
@@ -179,15 +217,15 @@ void findseatboss(){
     }
 }
 
-void findseat(){   
+void findseat(){  
     readseat();
     if(user==100){
         findseatboss();
     }
     for(int i=1;i<=7;i++){
         for(int j=1;j<=5;j++){
-            for(int k=1;k<=4;k++){
-                for(int w=1;w<=4;w++){
+            for(int k=1;k<=arrx[i][j];k++){
+                for(int w=1;w<=arry[i][j][k];w++){
                     if(arr[i][j][k][w]==user){
                         cout<<day[i]<<" ";
                         printf("Floor %d Seat %d %d\n",j,k,w);
@@ -205,30 +243,33 @@ void reserveboss(){
     checkday();
     cin>>c;
     cin>>cf;
+    cin>>c;
     cin>>x>>y;
     arr[cd][cf][x][y]=now;
     writeseat();
 }
 
-void eraseday(){//Erase Monday 
+void eraseday(){//boss Erase Monday 
     readseat();
     cin>>c;
     if(c=="All"){
         for(int j=1;j<=5;j++){
-            for(int k=1;k<=4;k++){
-                for(int w=1;w<=4;w++){
-                    arr[cd][j][k][w]=0;
+            for(int k=1;k<=arrx[cd][j];k++){
+                for(int w=1;w<=arry[cd][j][k];w++){
+                    arr[cd][j][k][w]=30;
                 }
             }
         }
+        writeseat();
     }
     if(c=="Floor"){
         cin>>cf;
-        for(int k=1;k<=4;k++){
-            for(int w=1;w<=4;w++){
-                arr[cd][cf][k][w]=0;
+        for(int k=1;k<=arrx[cd][cf];k++){
+            for(int w=1;w<=arry[cd][cf][k];w++){
+                arr[cd][cf][k][w]=30;
             }
         }
+        writeseat();
     }
 }
 
@@ -243,9 +284,10 @@ void eraseboss(){
     checkday();
     cin>>c;
     cin>>cf;
+    cin>>c;
     cin>>x>>y;
     if(arr[cd][cf][x][y]==now){
-        arr[cd][cf][x][y]=0;
+        arr[cd][cf][x][y]=30;
         cout<<"OK\n";
     }else{
         cout<<"取消失败\n";
@@ -260,10 +302,18 @@ void erasenormal(){
     cin>>cf;
     cin>>x>>y;
     if(arr[cd][cf][x][y]==user){
-        arr[cd][cf][x][y]=0;
+        arr[cd][cf][x][y]=30;
         cout<<"\n";
     }else{
         cout<<"你没有预约该座位\n";
+    }
+    writeseat();
+}
+
+void checkloc(){
+    readseat();
+    if(x<=arrx[cd][cf]&&y<=arry[cd][cf][x]){
+        arr[cd][cf][x][y]=0;
     }
     writeseat();
 }
@@ -291,6 +341,10 @@ int main(){
         }
 
         if(checkday()){
+            if(user==0){
+                cout<<"请先登录\n";
+                continue;
+            }
             cin>>c;
             cin>>cf;
             if(cf<1||cf>5){
@@ -301,6 +355,10 @@ int main(){
             printfnow();
         }
         if(c=="Reserve"){
+            if(user==0){
+                cout<<"请先登录\n";
+                continue;
+            }
             if(user==100){
                 reserveboss();
                 continue;
@@ -309,6 +367,10 @@ int main(){
             continue;
         }
         if(c=="Erase"){
+            if(user==0){
+                cout<<"请先登录\n";
+                continue;
+            }
             if(user==100){
                 eraseboss();
             }else{
@@ -316,6 +378,10 @@ int main(){
             }
         }
         if(c=="Clear"){
+            if(user==0){
+                cout<<"请先登录\n";
+                continue;
+            }
             if(user!=100){
                 cout<<"权限不够";
             }else{   
@@ -325,8 +391,46 @@ int main(){
             continue;
         }
         if(c=="Reservation"){
+            if(user==0){
+                cout<<"请先登录\n";
+                continue;
+            }
             findseat();
             continue;
+        }
+        if(c=="Del"){
+            if(user==100){
+                cin>>c;
+                checkday();
+                cin>>c;
+                cin>>cf;
+                cin>>c;
+                cin>>x>>y;
+                checkloc();
+            }else{
+                cout<<"权限不够\n";
+            }
+        }
+        if(c=="Add"){
+            if(user==100){
+                cin>>c;
+                checkday();
+                cin>>c;
+                cin>>cf;
+                cin>>c;
+                cin>>x>>y;
+                readseat();
+                while(x>arrx[cd][cf]){
+                    arrx[cd][cf]=x;
+                }
+                if(y>arry[cd][cf][x]){
+                    arry[cd][cf][x]=y;
+                }
+                arr[cd][cf][x][y]=30;
+                writeseat();
+            }else{
+                cout<<"权限不够\n";
+            }
         }
         //cout<<"Wrong"<<"\n";
     }
