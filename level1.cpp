@@ -96,7 +96,7 @@ void readseat(){
     fclose(pfd);
 }
 
-void reserve(){
+void reserve(){// Reserve Monday Floor 1 Seat 2 3
     cin>>c;
     cd=0;
     checkday();
@@ -118,7 +118,7 @@ void reserve(){
     writeseat();
 }
 
-void printfboss(){
+void printfboss(){//boss Reservation Monday Floor 1
     for(int i=1;i<=4;i++){
         for(int j=1;j<=4;j++){
             if(arr[cd][cf][i][j]==0){
@@ -131,7 +131,7 @@ void printfboss(){
     }
 }
 
-void printfnow(){
+void printfnow(){//Monday Floor 1
     if(user==100){
         printfboss();
         return;
@@ -150,7 +150,7 @@ void printfnow(){
     }
 }
 
-void prework(){
+void prework(){// Clear
     FILE *pfd=fopen("library.txt","w");
     for(int i=1;i<=7;i++){
         for(int j=1;j<=5;j++){
@@ -164,7 +164,7 @@ void prework(){
     fclose(pfd);
 }
 
-void findseat(){   
+void findseat(){   //Reservation
     readseat();
     for(int i=1;i<=7;i++){
         for(int j=1;j<=5;j++){

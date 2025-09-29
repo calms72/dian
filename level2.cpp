@@ -122,7 +122,7 @@ void readseat(){
     fclose(pfd);
 }
 
-void reserve(){
+void reserve(){// Reserve Monday Floor 1 Seat 2 3
     cin>>c;
     cd=0;
     checkday();
@@ -144,7 +144,7 @@ void reserve(){
     writeseat();
 }
 
-void printfboss(){
+void printfboss(){// boss Reservation Monday Floor 1
     for(int i=1;i<=arrx[cd][cf];i++){
         for(int j=1;j<=arry[cd][cf][i];j++){
             if(arr[cd][cf][i][j]==30){
@@ -159,7 +159,7 @@ void printfboss(){
     }
 }
 
-void printfnow(){
+void printfnow(){//Monday Floor 1
     if(user==100){
         printfboss();
         return;
@@ -201,7 +201,7 @@ void prework(){
     fclose(pfd);
 }
 
-void findseatboss(){
+void findseatboss(){// boss Reservation
     readseat();
     for(int i=1;i<=7;i++){
         for(int j=1;j<=5;j++){
@@ -217,7 +217,7 @@ void findseatboss(){
     }
 }
 
-void findseat(){  
+void findseat(){  //Reservation
     readseat();
     if(user==100){
         findseatboss();
@@ -236,7 +236,7 @@ void findseat(){
     }
 }
 
-void reserveboss(){
+void reserveboss(){// boss Reserve Monday Floor 1 Seat 2 3 User A
     cin>>c;
     int now= c[0] - 'A' + 1;
     cin>>c;
@@ -249,7 +249,7 @@ void reserveboss(){
     writeseat();
 }
 
-void eraseday(){//boss Erase Monday 
+void eraseday(){//boss Erase Monday All  / Erase Monday Floor 1
     readseat();
     cin>>c;
     if(c=="All"){
@@ -273,7 +273,7 @@ void eraseday(){//boss Erase Monday
     }
 }
 
-void eraseboss(){
+void eraseboss(){// boss Erase A Monday Floor 1 Seat 2 3 
     cin>>c;
     if(checkday()){
         eraseday();
@@ -295,7 +295,7 @@ void eraseboss(){
     writeseat();
 }
 
-void erasenormal(){
+void erasenormal(){// Erase Monday Floor 1 Seat 2 3
     cin>>c;
     checkday();
     cin>>c;
@@ -310,7 +310,7 @@ void erasenormal(){
     writeseat();
 }
 
-void checkloc(){
+void checkloc(){// 删除座位
     readseat();
     if(x<=arrx[cd][cf]&&y<=arry[cd][cf][x]){
         arr[cd][cf][x][y]=0;
